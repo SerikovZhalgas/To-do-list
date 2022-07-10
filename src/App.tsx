@@ -16,30 +16,35 @@ function App() {
         {id: v1(), title: "JS", isDone: true},
         {id: v1(), title: "ReactJS", isDone: false}
     ])
+    const [filter, setFilter] = useState<FilterValuesType>("all")
 
     const removeTask = (taskId: string): void => {
         setTasks(tasks.filter((task: TaskType) => task.id !== taskId))
     }
-
     const addTask= (title: string) => {
         setTasks([{id: v1(), title, isDone: false}, ...tasks])
     }
-
-    const [filter, setFilter] = useState<FilterValuesType>("all")
-    let tasksForRender;
-    switch (filter) {
-        case "completed":
-            tasksForRender = tasks.filter(t=> t.isDone === true)
-            break
-        case "active":
-            tasksForRender = tasks.filter(t=> t.isDone === false)
-            break
-        default:
-            tasksForRender = tasks
+    const changeTaskStatus = (id: string, isDone: boolean) => {
+        let task=tasks.find(t=>t.id===id)
+        if(task){
+            task.isDone = isDone;
+            setTasks([...tasks])
+        }
     }
 
     const changeFilter = (filter: FilterValuesType) => {
         setFilter(filter)
+    }
+    let tasksForRender;
+    switch (filter) {
+        case "completed":
+            tasksForRender = tasks.filter(t=> t.isDone)
+            break
+        case "active":
+            tasksForRender = tasks.filter(t=> !t.isDone)
+            break
+        default:
+            tasksForRender = tasks
     }
 
     // UI:
@@ -51,6 +56,8 @@ function App() {
                 removeTask={removeTask}
                 changeFilter={changeFilter}
                 addTask={addTask}
+                changeTaskStatus={changeTaskStatus}
+                filter={filter}
             />
         </div>
     );
